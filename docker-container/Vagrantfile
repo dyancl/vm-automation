@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrant.configure(2) do |config|
+#   config.vm.define "cassandra" do |cassandra|
+#     cassandra.vm.provider "docker" do |d|
+#       d.image = "spotify/cassandra"
+#       # d.build_dir = "."
+#       d.ports = ["9042:9042", "9160:9160"]
+#       # d.volumes = ["/var/docker/postgresql:/data"]
+#       # d.env = {
+#       #   USER: "root",
+#       #   PASS: "abcdef12345"
+#       #   DB: "root"
+#       # }
+#       d.vagrant_vagrantfile = "host/Vagrantfile"
+#     end
+#   end
+# end
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
+
+require 'yaml'
+container_configs = YAML.load_file('containers.yml')
+
+Vagrant.configure("2") do |config|
+
+  config.vm.provider "docker" do |docker| 
+    docker.vagrant_vagrantfile = "host/Vagrantfile"
+  end
+
+  container_configs.each do |container_config|
+    config.vm.define container_config["name"] do |container|
+      # container.vm.synced_folder ".", "/vagrant", disabled: true
+      container.vm.provider "docker" do |d|
+        # specify the docker image to use, pull value from YMAL
+        d.name = container_config["name"]
+        d.image = container_config["image"]
+        d.ports = container_config["ports"]
+      end 
+    end
+  end 
+
+
+end

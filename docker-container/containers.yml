@@ -1,0 +1,8 @@
+---
+- name: cassandra-01
+  image: spotify/cassandra
+  ports: ["9042:9042", "9160:9160"]
+
+- name: oracle-xe-11g-01
+  image: wnameless/oracle-xe-11g
+  ports: ["49160:22", "1521:1521"]
